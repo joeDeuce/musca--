@@ -1,0 +1,87 @@
+"dmenu_run"
+Mod4 + x
+
+"xscreensaver-command -lock && xset dpms force off"
+Mod4 + Pause
+
+"apis -command split -direction horizontal -ratio 0.5"
+Mod4 + h
+
+"apis -command split -direction vertical -ratio 0.5"
+Mod4 + v
+
+"apis -command remove"
+Mod4 + r
+
+"apis -command config -toggle tile"
+Mod4 + t
+
+"apis -command config -toggle above"
+Mod4 + a
+
+"apis -command overlay -mode toggle"
+Mod4 + o
+
+"wmctrl -i -c `xprop -root | egrep ^_NET_ACTIVE | awk '{print $5}'`"
+Mod4 + k
+
+"ewmh_window.sh cycle next"
+Mod4 + c
+
+"ewmh_window.sh cycle back"
+Mod4 + comma
+
+"ewmh_window.sh cycle next"
+Mod4 + period
+
+"ewmh_window.sh switch"
+Mod4 + w
+
+"ewmh_window.sh desktop next"
+Mod4 + Next
+
+"ewmh_window.sh desktop back"
+Mod4 + Prior
+
+"apis -c focus -direction left"
+Mod4 + Left
+
+"apis -c focus -direction right"
+Mod4 + Right
+
+"apis -c focus -direction up"
+Mod4 + Up
+
+"apis -c focus -direction down"
+Mod4 + Down
+
+"apis_frame_resize.php left"
+Mod4 + Control + Left
+
+"apis_frame_resize.php right"
+Mod4 + Control + Right
+
+"apis_frame_resize.php up"
+Mod4 + Control + Up
+
+"apis_frame_resize.php down"
+Mod4 + Control + Down
+
+"apis -c config -place top,left"
+Mod4 + KP_7
+"apis -c config -place top,center"
+Mod4 + KP_8
+"apis -c config -place top,right"
+Mod4 + KP_9
+"apis -c config -place middle,left"
+Mod4 + KP_4
+"apis -c config -place middle,center"
+Mod4 + KP_5
+"apis -c config -place middle,right"
+Mod4 + KP_6
+"apis -c config -place bottom,left"
+Mod4 + KP_1
+"apis -c config -place bottom,center"
+Mod4 + KP_2
+"apis -c config -place bottom,right"
+Mod4 + KP_3
