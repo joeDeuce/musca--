@@ -1,0 +1,127 @@
+#!/usr/bin/env ruby
+
+=begin rdoc
+
+= rbot main executable
+
+Usage:
+
+  % rbot [options] [config directory]
+
+== Options
+
+[-h, --help]
+    display a help message and exit
+[-v, --version]
+    display version information and exit
+[-d, --debug]
+    enable debug messages
+[-l, --loglevel _level_]
+    sets the minimum log level verbosity
+[-b, --background]
+    background (daemonize) the bot
+[-p, --pidfile _filename_]
+    write the bot pid to _filename_
+
+The default config directory is <tt>~/.rbot</tt>.
+
+The default pidfile is <tt><i>botdir</i>/rbot.pid</tt>.
+
+The logfile is located at <tt><i>botdir</i>/<i>botname</i>.log</tt>, and
+the default loglevel is 1 (INFO messages). Possible values for the loglevel
+are 0 (DEBUG), 1 (INFO), 2 (WARN), 3 (ERROR), 4 (FATAL).
+
+Please note that the logfile doesn't contain IRC logs (which are located at
+<tt><i>botdir</i>/logs/*</tt>, but only rbot diagnostic messages.
+
+=end
+
+# Copyright (C) 2002-2006 Tom Gilbert.
+# Copyright (C) 2007-2008 Giuseppe Bilotta and the rbot development team
+#
+# This is free software, see COPYING for licensing details
+
+$VERBOSE=true
+
+require 'etc'
+require 'getoptlong'
+require 'fileutils'
+
+$version ||= '0.9.15'
+$version_timestamp ||= 0
+$opts = Hash.new
+
+orig_opts = ARGV.dup
+
+opts = GetoptLong.new(
+  ["--background", "-b", GetoptLong::NO_ARGUMENT],
+  ["--debug", "-d", GetoptLong::NO_ARGUMENT],
+  ["--help",  "-h", GetoptLong::NO_ARGUMENT],
+  ["--loglevel",  "-l", GetoptLong::REQUIRED_ARGUMENT],
+  ["--trace",  "-t", GetoptLong::REQUIRED_ARGUMENT],
+  ["--pidfile", "-p", GetoptLong::REQUIRED_ARGUMENT],
+  ["--version", "-v", GetoptLong::NO_ARGUMENT]
+)
+
+$debug = $DEBUG
+$daemonize = false
+
+opts.each {|opt, arg|
+  $debug = true if(opt == "--debug")
+  $daemonize = true if(opt == "--background")
+  $opts[opt.sub(/^-+/, "")] = arg
+}
+
+$cl_loglevel = $opts["loglevel"].to_i if $opts["loglevel"]
+
+if ($opts["trace"])
+  set_trace_func proc { |event, file, line, id, binding, classname|
+    if classname.to_s == $opts["trace"]
+      printf "TRACE: %8s %s:%-2d %10s %8s\n", event, File.basename(file), line, id, classname
+    end
+  }
+end
+
+defaultlib = File.expand_path(File.dirname($0) + '/../lib')
+
+if File.directory? "#{defaultlib}/rbot"
+  unless $:.include? defaultlib
+    $:.unshift defaultlib
+  end
+end
+  
+begin
+  require 'rbot/ircbot'
+rescue LoadError => e
+  puts "Error: couldn't find the rbot/ircbot module (or one of its dependencies)\n"
+  puts e
+  exit 2
+end
+
+# ruby 1.9 specific fixes
+unless RUBY_VERSION < '1.9'
+  require 'rbot/compat19'
+end
+
+if ($opts["version"])
+  puts "rbot #{$version}"
+  exit 0
+end
+
+if ($opts["help"])
+  puts "usage: rbot [options] [config directory]"
+  puts "  -h, --help         this message"
+  puts "  -v, --version      version information"
+  puts "  -d, --debug        enable debug messages"
+  puts "  -l, --loglevel     sets the log level verbosity"
+  puts "  -b, --background   background (daemonize) the bot"
+  puts "  -p, --pidfile      write the bot pid to file"
+  puts "config directory defaults to ~/.rbot"
+  exit 0
+end
+
+if(bot = Irc::Bot.new(ARGV.shift, :argv => orig_opts))
+  # just run the bot
+  bot.mainloop
+end
+

@@ -1,0 +1,68 @@
+#!/usr/bin/env ruby
+# post-commit - a hook to talk to the svnwatch rbot plugin
+# author(s): Robby Russell and Ben Bleything of the PDX.rb
+# slightly modified to handle multiple repositorys by Daniel Hedberg
+# This file should be placed in the repository's hooks directory
+
+require 'drb'
+
+# Configuration Options
+chan = '#channel' 	#IRC channel that you want rbot to send notices to
+
+@conf = { 
+  :port => '7666',       # 7666 (you will need this to be the same in post-commit)
+  :host => '192.168.130.5',  # localhost, don't set to remote ip unless you know what you are doing
+}
+
+chan = '#svn-hardware'
+
+
+# Okay.  So we get two args from svn.
+#
+# [1] - repo path
+# [2] - revision number
+#
+# We then use this information to gather relevant data about the commit
+# and do with it as we please.
+
+path = ARGV[0]
+rev = ARGV[1]
+
+if (path.nil? || rev.nil?)
+  puts "Usage: post-commit <repo path> <rev number>"
+  exit
+end
+
+path = File.expand_path(path)
+
+DRb.start_service
+bot = DRbObject.new(nil, "druby://#{@conf[:host]}:#{@conf[:port]}")
+
+# The array contains this data:
+# [0]: committer
+# [1]: timestamp of commit
+# [2]: Size of log entry, in bytes
+# [3]: Log message
+info_array = `svnlook info --revision #{rev} #{path}`.strip.split(/\n/, 4)
+
+log = `svn log -v -r #{rev} file://#{path}`
+
+# dumb idea, it would wrap too many lines if multiple files...
+#changed = `svnlook changed -r #{rev} #{path}`.strip
+
+# guess what the repository name is
+repos = path.split(/\//).last
+
+commit_info = { :author     => info_array[0],
+                :revision   => rev,
+                :repository => repos,
+                :log        => log,
+                :chan       => chan,
+              }
+
+begin
+  bot.svn_commit commit_info
+rescue
+
+end
+exit 0

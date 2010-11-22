@@ -57,142 +57,142 @@ char desc[BLOCK];
 
 int XWtf(Display *dpy, XErrorEvent *ee)
 {
-	if ((ee->error_code == BadWindow)
-		|| (ee->request_code == X_ChangeWindowAttributes && ee->error_code == BadMatch))
-		return 0;
-	fprintf(stderr, "fatal error: request code=%d, error code=%d\n", ee->request_code, ee->error_code);
-	return xerrorxlib(dpy, ee);
+    if ((ee->error_code == BadWindow)
+        || (ee->request_code == X_ChangeWindowAttributes && ee->error_code == BadMatch))
+        return 0;
+    fprintf(stderr, "fatal error: request code=%d, error code=%d\n", ee->request_code, ee->error_code);
+    return xerrorxlib(dpy, ee);
 }
 Window XIterateChildren(Display *d, Window parent, XIterator cb, void *ptr)
 {
-	Window ret = None, d1, d2, *wins = NULL; ucell num, i = 0;
-	if (XQueryTree(d, parent, &d1, &d2, &wins, &num))
-	{
-		for (i = 0; i < num && cb(wins[i], ptr); i++);
-		if (i < num) ret = wins[i];
-		if (wins) XFree(wins);
-	}
-	return ret;
+    Window ret = None, d1, d2, *wins = NULL; ucell num, i = 0;
+    if (XQueryTree(d, parent, &d1, &d2, &wins, &num))
+    {
+        for (i = 0; i < num && cb(wins[i], ptr); i++);
+        if (i < num) ret = wins[i];
+        if (wins) XFree(wins);
+    }
+    return ret;
 }
 void XAtomSet(Display *d, ucell atom, Window w, Atom type, int format, void *data, int items)
 {
-	XChangeProperty(d, w, atom, type, format, PropModeReplace, (ubyte*)data, items);
+    XChangeProperty(d, w, atom, type, format, PropModeReplace, (ubyte*)data, items);
 }
 void XAtomSetString(Display *d, ucell atom, Window w, char *s)
 {
-	XAtomSet(d, atom, w, XA_STRING, 8, s, strlen(s)+1);
+    XAtomSet(d, atom, w, XA_STRING, 8, s, strlen(s)+1);
 }
 ubyte XAtomGet(Display *d, ucell atom, Window w, ubyte **data, ucell *items)
 {
-	*data = NULL; *items = 0;
-	Atom actual_type_return;
-	int actual_format_return;
-	unsigned long nitems_return;
-	unsigned long bytes_after_return;
-	ubyte *prop_return = NULL;
-	if (Success == XGetWindowProperty(d, w, atom, 0L, BLOCK*BLOCK, False, AnyPropertyType,
-		&actual_type_return, &actual_format_return, &nitems_return, &bytes_after_return, &prop_return)
-		&& nitems_return && prop_return)
-	{
-		int bytes = (nitems_return * (actual_format_return / 8)) + 1;
-		ubyte *blk = malloc(bytes); memmove(blk, prop_return, bytes);
-		*data = blk; *items = nitems_return;
-		return 1;
-	}
-	if (prop_return) XFree(prop_return);
-	return 0;
+    *data = NULL; *items = 0;
+    Atom actual_type_return;
+    int actual_format_return;
+    unsigned long nitems_return;
+    unsigned long bytes_after_return;
+    ubyte *prop_return = NULL;
+    if (Success == XGetWindowProperty(d, w, atom, 0L, BLOCK*BLOCK, False, AnyPropertyType,
+        &actual_type_return, &actual_format_return, &nitems_return, &bytes_after_return, &prop_return)
+        && nitems_return && prop_return)
+    {
+        int bytes = (nitems_return * (actual_format_return / 8)) + 1;
+        ubyte *blk = malloc(bytes); memmove(blk, prop_return, bytes);
+        *data = blk; *items = nitems_return;
+        return 1;
+    }
+    if (prop_return) XFree(prop_return);
+    return 0;
 }
 char XAtomGetString(Display *d, ucell prop, Window win, char **pad, ucell *plen)
 {
-	ubyte r = XAtomGet(d, prop, win, (ubyte**)pad, plen);
-	if (r && *pad && *plen) (*pad)[*plen] = '\0';
-	return r;
+    ubyte r = XAtomGet(d, prop, win, (ubyte**)pad, plen);
+    if (r && *pad && *plen) (*pad)[*plen] = '\0';
+    return r;
 }
 void event_CreateNotify(XEvent *e)
 {
-	XCreateWindowEvent *cw = &e->xcreatewindow;
-	XSelectInput(display, cw->window, WINDOW_MASK);
+    XCreateWindowEvent *cw = &e->xcreatewindow;
+    XSelectInput(display, cw->window, WINDOW_MASK);
 }
 void event_PropertyNotify(XEvent *e)
 {
-	ubyte *data = NULL; ucell len = 0; int i;
-	Window *wins = NULL;
-	XPropertyEvent *pe = &e->xproperty;
-	char *name = XGetAtomName(display, pe->atom);
-	ucell dlen = snprintf(desc, BLOCK, "%s", name);
-	if (pe->window == root)
-	{
-		if (pe->atom == XInternAtom(display, "_NET_ACTIVE_WINDOW", False)
-			&& XAtomGet(display, pe->atom, root, &data, &len) && data && len)
-		{
-			dlen += snprintf(desc+dlen, BLOCK-dlen, " 0x%08x", (ucell)*((Window*)data));
-		} else
-		if ((pe->atom == XInternAtom(display, "_NET_CLIENT_LIST", False) ||
-				pe->atom == XInternAtom(display, "_NET_CLIENT_LIST_STACKING", False))
-			&& XAtomGet(display, pe->atom, root, &data, &len) && data && len)
-		{
-			wins = (Window*)data;
-			for (i = 0; i < len; i++)
-				dlen += snprintf(desc+dlen, BLOCK-dlen, " 0x%08x", (ucell)wins[i]);
-		}
-	}
-	if (name) XFree(name);
-	if (data) XFree(data);
+    ubyte *data = NULL; ucell len = 0; int i;
+    Window *wins = NULL;
+    XPropertyEvent *pe = &e->xproperty;
+    char *name = XGetAtomName(display, pe->atom);
+    ucell dlen = snprintf(desc, BLOCK, "%s", name);
+    if (pe->window == root)
+    {
+        if (pe->atom == XInternAtom(display, "_NET_ACTIVE_WINDOW", False)
+            && XAtomGet(display, pe->atom, root, &data, &len) && data && len)
+        {
+            dlen += snprintf(desc+dlen, BLOCK-dlen, " 0x%08x", (ucell)*((Window*)data));
+        } else
+        if ((pe->atom == XInternAtom(display, "_NET_CLIENT_LIST", False) ||
+                pe->atom == XInternAtom(display, "_NET_CLIENT_LIST_STACKING", False))
+            && XAtomGet(display, pe->atom, root, &data, &len) && data && len)
+        {
+            wins = (Window*)data;
+            for (i = 0; i < len; i++)
+                dlen += snprintf(desc+dlen, BLOCK-dlen, " 0x%08x", (ucell)wins[i]);
+        }
+    }
+    if (name) XFree(name);
+    if (data) XFree(data);
 }
 void event_ClientMessage(XEvent *e)
 {
-	XClientMessageEvent *cm = &e->xclient;
-	char *name = XGetAtomName(display, cm->message_type);
-	snprintf(desc, BLOCK, "%s", name);
-	if (name) XFree(name);
+    XClientMessageEvent *cm = &e->xclient;
+    char *name = XGetAtomName(display, cm->message_type);
+    snprintf(desc, BLOCK, "%s", name);
+    if (name) XFree(name);
 }
 void (*event[LASTEvent])(XEvent*) = {
-	[CreateNotify] = event_CreateNotify,
-	[PropertyNotify] = event_PropertyNotify,
-	[ClientMessage] = event_ClientMessage,
+    [CreateNotify] = event_CreateNotify,
+    [PropertyNotify] = event_PropertyNotify,
+    [ClientMessage] = event_ClientMessage,
 };
 char *event_names[LASTEvent] = {
-	[Expose]           = "Expose",
-	[EnterNotify]      = "EnterNotify",
-	[LeaveNotify]      = "LeaveNotify",
-	[FocusIn]          = "FocusIn",
-	[FocusOut]         = "FocusOut",
-	[KeymapNotify]     = "KeymapNotify",
-	[VisibilityNotify] = "VisibilityNotify",
-	[CreateNotify]     = "CreateNotify",
-	[DestroyNotify]    = "DestroyNotify",
-	[UnmapNotify]      = "UnmapNotify",
-	[MapNotify]        = "MapNotify",
-	[ReparentNotify]   = "ReparentNotify",
-	[ConfigureNotify]  = "ConfigureNotify",
-	[GravityNotify]    = "GravityNotify",
-	[CirculateNotify]  = "CirculateNotify",
-	[PropertyNotify]   = "PropertyNotify",
-	[SelectionNotify]  = "SelectionNotify",
-	[ColormapNotify]   = "ColormapNotify",
-	[MappingNotify]    = "MappingNotify",
-	[ClientMessage]    = "ClientMessage",
+    [Expose]           = "Expose",
+    [EnterNotify]      = "EnterNotify",
+    [LeaveNotify]      = "LeaveNotify",
+    [FocusIn]          = "FocusIn",
+    [FocusOut]         = "FocusOut",
+    [KeymapNotify]     = "KeymapNotify",
+    [VisibilityNotify] = "VisibilityNotify",
+    [CreateNotify]     = "CreateNotify",
+    [DestroyNotify]    = "DestroyNotify",
+    [UnmapNotify]      = "UnmapNotify",
+    [MapNotify]        = "MapNotify",
+    [ReparentNotify]   = "ReparentNotify",
+    [ConfigureNotify]  = "ConfigureNotify",
+    [GravityNotify]    = "GravityNotify",
+    [CirculateNotify]  = "CirculateNotify",
+    [PropertyNotify]   = "PropertyNotify",
+    [SelectionNotify]  = "SelectionNotify",
+    [ColormapNotify]   = "ColormapNotify",
+    [MappingNotify]    = "MappingNotify",
+    [ClientMessage]    = "ClientMessage",
 };
 bool setup(Window w, void *ptr)
 {
-	XSelectInput(display, w, WINDOW_MASK);
-	return 1;
+    XSelectInput(display, w, WINDOW_MASK);
+    return 1;
 }
 int main(int argc, char *argv[])
 {
-	display = XOpenDisplay(0);
-	xerrorxlib = XSetErrorHandler(XWtf);
-	screen = XScreenOfDisplay(display, DefaultScreen(display));
-	root = screen->root;
-	XSelectInput(display, root, ROOT_MASK);
-	XIterateChildren(display, root, setup, NULL);
-	XEvent ev;
-	for (;;)
-	{
-		*desc = '\0';
-		XNextEvent(display, &ev);
-		if (event[ev.type]) event[ev.type](&ev);
-		printf("%s 0x%08x %s\n", event_names[ev.type], (ucell)ev.xany.window, desc);
-		fflush(stdout);
-	}
+    display = XOpenDisplay(0);
+    xerrorxlib = XSetErrorHandler(XWtf);
+    screen = XScreenOfDisplay(display, DefaultScreen(display));
+    root = screen->root;
+    XSelectInput(display, root, ROOT_MASK);
+    XIterateChildren(display, root, setup, NULL);
+    XEvent ev;
+    for (;;)
+    {
+        *desc = '\0';
+        XNextEvent(display, &ev);
+        if (event[ev.type]) event[ev.type](&ev);
+        printf("%s 0x%08x %s\n", event_names[ev.type], (ucell)ev.xany.window, desc);
+        fflush(stdout);
+    }
 }

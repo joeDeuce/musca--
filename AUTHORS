@@ -1,0 +1,46 @@
+Original Author
+o Tom Gilbert (giblet) <tom@linuxbrit.co.uk>
+
+Ruthless Tyrant (yes, that means 'project leader')
+o Giuseppe "Oblomov" Bilotta (tango_) <giuseppe.bilotta@gmail.com>
+
+Sanity keeper (aka 'my main role here is to bitch a lot about even the legitimate patches')
+o Dmitry Kim (jsn) <dmitry dot kim at gmail dot com>
+
+YAML & Multilingual expert, blame collector
+o Yaohan Chen (hagabaka) <yaohan.chen@gmail.com>
+
+Insanity keeper
+o Mark Kretschmann (markey) <markey@web.de>
+
+Pusher (aka 'my main role here is to bitch a lot about the delay in the releases')
+o Raine Virta (rane_) <raine.virta@gmail.com>
+
+Chuck Norris trainer
+o Chris Gahan (epitron) <chris@ill-logic.com>
+
+Patch contributors
+o Peter Suschlik (pesu) <peter@zilium.de>
+o Alexey I. Froloff <raorn@altlinux.ru>
+o Ari Pollak <ajp@aripollak.com>
+o Rudolf Polzer <atfield-dt@durchnull.de>
+o René Nussbaumer <public@killerfox.forkbomb.ch>
+o Adam James (atj) <atj@pulsewidth.org.uk>
+o Robert Corsaro (doki_pen) <rcorsaro@optaros.com>
+o Jesse Keys (jessekeys) <jesse@teranetworks.de>
+o Jan Wikholm (unfo-) <jw@jw.fi>
+o Moritz Augsburger (moemoe) <rbot@moritz.augsburger.name>
+o Alexander Beisig <alexander.beisig@gmx.de>
+o Casey Link (Ramblurr) <unnamedrambler@gmail.com>
+
+Module contributors
+o dice.rb  - David Dorward (Dorward) <david@david.us-lot.org>
+o lart.rb  - Michael Brailsford <brailsmt@yahoo.com>
+o stats.rb - Michael Brailsford <brailsmt@yahoo.com>
+o ri.rb    - Michael Brailsford <brailsmt@yahoo.com>
+o bash/threat - Robin Kearney <robin@riviera.org.uk>
+
+"Testing" (having fun breaking rbot creatively)
+o Paul Duncan (pabs) <pabs@pablotron.org>
+o Richard Lowe (richlowe) <richlowe@richlowe.net>
+

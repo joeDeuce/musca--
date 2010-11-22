@@ -1,0 +1,51 @@
+--- 
+:"generic-in": 
+- salve
+- ehila'
+- ehilà
+- ola'
+- olà
+- yo
+- ue'
+- uè
+:"morning-in": 
+- "'giorno"
+- giorno
+- buon giorno
+- buon di'
+- buon dì
+- buondì
+- buongiorno
+:"afternoon-in": 
+- "'sera"
+- buona sera
+- buonasera
+:"evening-in": 
+- "'sera"
+- buona sera
+- buonasera
+:"generic-out": 
+- a dopo
+- ci vediamo
+- adios
+- se vedemio
+- arrivederci
+- saluti
+:"morning-out":
+- buona giornata
+:"evening-out":
+- buona serata
+- buona notte
+- buonanotte
+:"generic":
+- ciao
+:"generic-dest":
+- gente
+- tutti
+- raga
+- raga'
+- ragà
+- ragazzi
+- ragazze
+- bot
+- bots
